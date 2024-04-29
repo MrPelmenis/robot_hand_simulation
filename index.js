@@ -1,33 +1,46 @@
 "use strict";
 let canvas;
 let ctx;
-let cordinatesStart = {x:420,y:69};
+let cordinatesStart = {x:500,y:-122};
 let x=0;
 let y=0;
 
+let stX = 0;
+let stY = 0;
+
 let steps = 100;
+let mySteps = 0;
 
 function start(){
     if(x < cordinatesStart.x){
-        x +=Math.abs(cordinatesStart.x)/steps;
+        x +=Math.abs(cordinatesStart.x - stX)/steps;
     }
     if(y < cordinatesStart.y){
-        y +=Math.abs(cordinatesStart.y)/steps;
+        y +=Math.abs(cordinatesStart.y - stY)/steps;
     }
 
     if(x>cordinatesStart.x){
-        x -= Math.abs(cordinatesStart.x)/steps;
+        x -= Math.abs(cordinatesStart.x - stX)/steps;
     }
     if(y>cordinatesStart.y){
-        y -= Math.abs(cordinatesStart.y)/steps;
+        y -= Math.abs(cordinatesStart.y - stY)/steps;
     }
      
     zime({x:x, y:y});
-    if(x<cordinatesStart.x || y< cordinatesStart.y){
+    if(mySteps < steps){
+        mySteps++;
         setTimeout(() => {
             start();
         }, 10);
-    };
+    }else{
+        mySteps = 0;
+        cordinatesStart = {x:Math.random() * 750 + 100,y:Math.random()* 900 - 450};
+        stX =x;
+        stY = y;
+        setTimeout(() => {
+            start();
+        }, 10);
+    }
 }
 
 
@@ -39,6 +52,11 @@ function zime(cordinates){
 
     ctx.beginPath();
     ctx.arc(cordinates.x, canvas.height / 2 - cordinates.y, 6, 0, 2 * Math.PI, false);
+    ctx.fillStyle = "red";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(cordinatesStart.x, canvas.height / 2 - cordinatesStart.y, 6, 0, 2 * Math.PI, false);
     ctx.fillStyle = "red";
     ctx.fill();
 
