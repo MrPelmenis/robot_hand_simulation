@@ -1,7 +1,6 @@
 "use strict";
 let canvas;
 let ctx;
-let cordinatesStart = {x:500,y:-122};
 let x=0;
 let y=0;
 
@@ -11,7 +10,76 @@ let stY = 0;
 let steps = 100;
 let mySteps = 0;
 
+let lineIndex = 1;
+
+let topCanvas;
+let topCtx; 
+
+function svgPathToArray(pathString) {
+    while(pathString.indexOf("\n") != -1){
+        pathString = pathString.replace("\n", " ");
+    }
+    let comands = pathString.split(" ");
+    let arr = [];
+    comands.forEach(comand => {
+        let moveOrLine = comand[0];
+        comand = comand.substring(1,comand.length);
+        comand = comand.split(",");
+        arr.push({
+            moveOrLine: moveOrLine,
+            x: JSON.parse(comand[0]),
+            y: JSON.parse(comand[1])
+        })
+    });
+    return arr;
+}
+const pathString = `M50,10
+L54.9,13.1
+L59.5,17.3
+L63.8,22.6
+L67.6,28
+L70.8,33.5
+L73.3,39
+L74.9,44.7
+L75.5,50.5
+L74.9,56.3
+L73.3,62
+L70.8,67.5
+L67.6,73
+L63.8,78.4
+L59.5,83.7
+L54.9,87.9
+L50,91
+L45.1,87.9
+L40.5,83.7
+L36.2,78.4
+L32.4,73
+L29.2,67.5
+L26.7,62
+L25.1,56.3
+L24.5,50.5
+L25.1,44.7
+L26.7,39
+L29.2,33.5
+L32.4,28
+L36.2,22.6
+L40.5,17.3
+L45.1,13.1
+L50,10`;
+const pathArray = svgPathToArray(pathString);
+console.log(pathArray);
+pathArray.push(pathArray[0]);
+
+
+let cordinatesStart = {x:pathArray[0].x*10, y:pathArray[0].y*10 - 500};
+
+
+
 function start(){
+    topCanvas = document.getElementById('topCanvas');
+    topCanvas.style.backgroundColor = 'transparent';
+    topCtx = topCanvas.getContext('2d', { alpha: true });
+
     if(x < cordinatesStart.x){
         x +=Math.abs(cordinatesStart.x - stX)/steps;
     }
@@ -27,6 +95,10 @@ function start(){
     }
      
     zime({x:x, y:y});
+    topCtx.beginPath();
+    topCtx.fillStyle = 'rgba(255, 0, 0, 1)';
+    topCtx.arc(x,canvas.height / 2 - y,2, 0, 2 * Math.PI);
+    topCtx.fill(); 
     if(mySteps < steps){
         mySteps++;
         setTimeout(() => {
@@ -34,7 +106,8 @@ function start(){
         }, 10);
     }else{
         mySteps = 0;
-        cordinatesStart = {x:Math.random() * 750 + 100,y:Math.random()* 900 - 450};
+        cordinatesStart = {x: pathArray[lineIndex].x*10, y: pathArray[lineIndex].y*10 - 500};
+        lineIndex++;
         stX =x;
         stY = y;
         setTimeout(() => {
@@ -48,6 +121,8 @@ function zime(cordinates){
     let rocinasGarums = 500;
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+
+
     uzzimetPaJaunam();
 
     ctx.beginPath();
@@ -80,9 +155,9 @@ function zime(cordinates){
     /*console.log("beigu x: " + (rocina1.dX + rocina2.dX));
     console.log("beigu y: " + (rocina1.dY + rocina2.dY));*/
 
-    console.log(t1Degrees);
+    /*console.log(t1Degrees);
     console.log(t2Degrees);
-    console.log(" ");
+    console.log(" ");*/
 }
 
 function uzzimetPaJaunam(){
